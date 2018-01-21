@@ -225,3 +225,25 @@ QUnit.test("class with translation strings", function (assert) {
 
     assert.deepEqual(result, expected);
 });
+
+QUnit.test("multiline comment and class", function (assert) {
+    var expected = {
+        testClass: {
+            title: "Test Class",
+            values: [0, 1],
+            texts: ["1", "2"],
+            default: 1
+        }
+    };
+
+    var testString = "\n/*\nmultiline\ncomment\n*/\nclass testClass {\n\ttitle = $STR_CLASS_TITLE;\n\tvalues[] = {0,1};\n\ttexts[] = {\"1\", \"2\"};\n\tdefault = 1;\n};"
+
+    var result = window.parse(testString, {
+        translations: {
+            STR_CLASS_TITLE: 'Test Class',
+            STR_TRANSLATED: 'Translated text'
+        }
+    });
+
+    assert.deepEqual(result, expected);
+});

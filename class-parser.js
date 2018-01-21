@@ -23,7 +23,8 @@ if (!Array.prototype.last) {
             COMMA: ',',
             MINUS: '-',
             SLASH: '/',
-            DOLLAR: '$'
+            DOLLAR: '$',
+            ASTERISK: '*'
         };
 
     /**
@@ -45,16 +46,22 @@ if (!Array.prototype.last) {
                     'after: ' + JSON.stringify(raw.substr(currentPosition, 40))
                 );
             },
-            detectLineComment = function () {
+            detectComment = function () {
                 var indexOfLinefeed;
                 if (current() === chars.SLASH && raw[currentPosition + 1] === chars.SLASH) {
                     indexOfLinefeed = raw.indexOf('\n', currentPosition);
                     currentPosition = indexOfLinefeed === -1 ? raw.length : indexOfLinefeed;
+                } 
+                else if(current() === chars.SLASH && raw[currentPosition + 1] === chars.ASTERISK) {
+                    var multilineClose = chars.ASTERISK + chars.SLASH;
+
+                    indexOfLinefeed = raw.indexOf(multilineClose, currentPosition);
+                    currentPosition = indexOfLinefeed === -1 ? raw.length : indexOfLinefeed + multilineClose.length;
                 }
             },
             next = function () {
                 currentPosition += 1;
-                detectLineComment();
+                detectComment();
                 return current();
             },
             nextWithoutCommentDetection = function () {
@@ -290,7 +297,7 @@ if (!Array.prototype.last) {
             throw new TypeError('expecting string!');
         }
 
-        detectLineComment();
+        detectComment();
         parseWhitespace();
         while(current()) {
             parseProperty(result);
